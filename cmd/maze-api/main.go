@@ -69,6 +69,7 @@ func main() {
 		JWTService: jwtService,
 
 		UserService: &service.UserService{Store: &storepkg.UserStore{Store: store}},
+		MazeService: &service.MazeService{Store: &storepkg.MazeStore{Store: store}},
 	}
 
 	// Initialize DB if requested

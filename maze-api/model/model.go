@@ -7,6 +7,20 @@ type User struct {
 	Username     string `json:"username,omitempty"`
 	Password     string `json:"password,omitempty"`
 	PasswordHash string `json:"-"`
+
+	// Has
+	Mazes []*Maze `json:"omitempty"`
+}
+
+type Maze struct {
+	ID       int64
+	Rows     int
+	Cols     int
+	Entrance string
+	Walls    []string
+
+	// Foreign key
+	UserID int64 `json:"-"`
 }
 
 type CustomClaims struct {
@@ -24,6 +38,19 @@ type UserService interface {
 	GetByID(id int64) (*User, error)
 	GetByUsername(username string) (*User, error)
 	Create(*User) (int64, error)
+}
+
+type MazeStore interface {
+	GetByID(id, userId int64) (*Maze, error)
+	GetAll(userId int64) ([]*Maze, error)
+	Create(*Maze) (int64, error)
+	Close() error
+}
+
+type MazeService interface {
+	GetByID(id, userId int64) (*Maze, error)
+	GetAll(userId int64) ([]*Maze, error)
+	Create(*Maze) (int64, error)
 }
 
 type JWTService interface {

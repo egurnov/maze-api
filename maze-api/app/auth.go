@@ -12,6 +12,15 @@ const (
 	CTXUserID = "user_id"
 )
 
+type LoginCredentialsDTO struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+type LoginResponseDTO struct {
+	Token string `json:"token"`
+}
+
 // Login godoc
 // @Summary Login to the API
 // @Description Login with username and password, get a token to use for further operations.
@@ -26,7 +35,7 @@ const (
 // @Failure 500 {object} Message
 // @Router /login [post]
 func (a *App) Login(ctx *gin.Context) {
-	var credentials Credentials
+	var credentials LoginCredentialsDTO
 	err := ctx.ShouldBind(&credentials)
 	if err != nil {
 		ctx.Error(err).SetType(BadRequestErrorType)
@@ -51,7 +60,7 @@ func (a *App) Login(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, JWTTokenResp{
+	ctx.JSON(http.StatusOK, LoginResponseDTO{
 		Token: token,
 	})
 }

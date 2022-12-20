@@ -13,6 +13,10 @@ const (
 	NotFoundErrorType   gin.ErrorType = 4
 )
 
+type Message struct {
+	Message string `json:"message"`
+}
+
 var MessageOK = &Message{
 	Message: "OK",
 }

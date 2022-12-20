@@ -22,6 +22,7 @@ func NewMySQLStore(filename string) (*Store, error) {
 
 	db.AutoMigrate(
 		&User{},
+		&Maze{},
 	)
 	db.LogMode(false)
 
@@ -38,6 +39,15 @@ func (s *Store) Wipe() error {
 		return err
 	}
 	err = s.db.AutoMigrate(&User{}).Error
+	if err != nil {
+		return err
+	}
+
+	err = s.db.DropTable(&Maze{}).Error
+	if err != nil {
+		return err
+	}
+	err = s.db.AutoMigrate(&Maze{}).Error
 	if err != nil {
 		return err
 	}

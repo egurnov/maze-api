@@ -17,6 +17,7 @@ type App struct {
 
 	JWTService  model.JWTService
 	UserService model.UserService
+	MazeService model.MazeService
 }
 
 //go:generate swag init -dir ./../../maze-api --generalInfo ./app/app.go  -o ../../docs
@@ -57,10 +58,10 @@ func (a *App) SetRoutes(r *gin.Engine) {
 		POST("/login", a.Login).
 		POST("/user", a.CreateUser)
 
-	// maze := r.Group("/maze", a.AuthorizeJWT())
-	// maze.
-	// 	GET("", a.GetAllMazes).
-	// 	GET(":id", a.GetMaze).
-	// 	GET(":id/solution", a.SolveMaze).
-	// 	POST("", a.CreateMaze)
+	maze := r.Group("/maze", a.AuthorizeJWT())
+	maze.
+		POST("", a.CreateMaze).
+		GET("", a.GetAllMazes).
+		GET(":id", a.GetMaze).
+		GET(":id/solution", a.SolveMaze)
 }

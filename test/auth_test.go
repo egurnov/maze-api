@@ -23,9 +23,17 @@ var _ = Describe("Auth", func() {
 
 	Specify("No token", func() {
 		testCases := []struct {
-			method string
-			path   string
-		}{}
+			method    string
+			path      string
+			expStatus int
+		}{
+			{http.MethodPost, "/user", http.StatusBadRequest},
+			{http.MethodPost, "/login", http.StatusBadRequest},
+			{http.MethodPost, "/maze", http.StatusUnauthorized},
+			{http.MethodGet, "/maze", http.StatusUnauthorized},
+			{http.MethodGet, "/maze/1", http.StatusUnauthorized},
+			{http.MethodGet, "/maze/1/solution", http.StatusUnauthorized},
+		}
 		for _, tc := range testCases {
 			By(tc.method + " " + tc.path)
 			req, err := http.NewRequest(tc.method, server.URL+tc.path, nil)
@@ -33,8 +41,10 @@ var _ = Describe("Auth", func() {
 			req.Header.Set("Content-Type", "application/json")
 			resp, err := http.DefaultClient.Do(req)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(resp.StatusCode).To(Equal(http.StatusUnauthorized))
-			Expect(ioutil.ReadAll(resp.Body)).To(BeEmpty())
+			Expect(resp.StatusCode).To(Equal(tc.expStatus))
+			if tc.expStatus == http.StatusUnauthorized {
+				Expect(ioutil.ReadAll(resp.Body)).To(BeEmpty())
+			}
 		}
 	})
 

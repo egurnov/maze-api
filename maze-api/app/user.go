@@ -9,6 +9,15 @@ import (
 	"github.com/egurnov/maze-api/maze-api/model"
 )
 
+type CreateUserRequestDTO struct {
+	Username string `json:"username,omitempty" binding:"omitempty"`
+	Password string `json:"password,omitempty" binding:"omitempty,min=1"`
+}
+
+type IDResponseDTO struct {
+	ID int64 `json:"id"`
+}
+
 func (a *App) GetUserByID(ctx *gin.Context) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 0, 64)
 	if err != nil {
@@ -39,7 +48,7 @@ func (a *App) GetUserByID(ctx *gin.Context) {
 // @Failure 500 {object} Message
 // @Router /user [post]
 func (a *App) CreateUser(ctx *gin.Context) {
-	var user CreateUserDTO
+	var user CreateUserRequestDTO
 	err := ctx.ShouldBindJSON(&user)
 	if err != nil {
 		ctx.Error(err).SetType(BadRequestErrorType)
@@ -60,10 +69,5 @@ func (a *App) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, IDResponse{ID: id})
-}
-
-type CreateUserDTO struct {
-	Username string `json:"username,omitempty" binding:"omitempty"`
-	Password string `json:"password,omitempty" binding:"omitempty,min=1"`
+	ctx.JSON(http.StatusCreated, IDResponseDTO{ID: id})
 }
