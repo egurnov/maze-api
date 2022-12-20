@@ -49,7 +49,7 @@ func wrapError(err error) error {
 	if gorm.IsRecordNotFoundError(err) {
 		return model.ErrNotFound
 	}
-	if err != nil && strings.Contains(err.Error(), "UNIQUE constraint failed: users.username") {
+	if err != nil && strings.Contains(err.Error(), "Duplicate entry") {
 		return model.ErrUsernameAlreadyUsed
 	}
 	return err

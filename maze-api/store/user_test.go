@@ -1,8 +1,6 @@
 package store_test
 
 import (
-	"os"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -10,7 +8,7 @@ import (
 	storepkg "github.com/egurnov/maze-api/maze-api/store"
 )
 
-const testDBConnString = "root:root@localhost:3306/maze_api"
+const testDBConnString = "root:root@(localhost:3306)/maze_api_test"
 
 var _ = Describe("UserStore", func() {
 	var s *storepkg.UserStore
@@ -20,11 +18,12 @@ var _ = Describe("UserStore", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		s = &storepkg.UserStore{Store: store}
+		Expect(s.Wipe()).To(Succeed())
 	})
 
 	AfterEach(func() {
+		Expect(s.Wipe()).To(Succeed())
 		Expect(s.Close()).To(Succeed())
-		Expect(os.Remove(testDBConnString)).To(Succeed())
 	})
 
 	Specify("full flow", func() {

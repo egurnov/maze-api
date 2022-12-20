@@ -35,10 +35,11 @@ func (s *UserStore) GetByUsername(username string) (*model.User, error) {
 }
 
 func (s *UserStore) Create(user *model.User) (int64, error) {
-	err := s.db.Create(&User{
+	dbUser := User{
 		Username:     user.Username,
 		PasswordHash: user.PasswordHash,
-	}).Error
+	}
+	err := s.db.Create(&dbUser).Error
 
-	return user.ID, wrapError(err)
+	return dbUser.ID, wrapError(err)
 }
