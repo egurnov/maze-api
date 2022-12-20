@@ -1,0 +1,64 @@
+run:
+  concurrency: 4
+  timeout: 5m
+  tests: true
+  skip-dirs: []
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters-settings:
+  govet:
+    check-shadowing: true
+  goimports:
+    local-prefixes: github.com/egurnov/maze-api
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  lll:
+    line-length: 200
+  unparam:
+    check-exported: true
+  nakedret:
+    max-func-lines: 30
+
+linters:
+  enable:
+    - govet
+    - staticcheck
+    - structcheck
+    - varcheck
+    - ineffassign
+    - deadcode
+    - typecheck
+    - depguard
+    - golint
+    - gofmt
+    - goimports
+    - lll
+    - unconvert
+    - nakedret
+    - gosimple
+    - unused
+    - errcheck
+
+  disable-all: true
+  fast: false
+
+issues:
+  exclude:
+    - "exported \\w+ (\\S*['.]*)([a-zA-Z'.*]*) should have comment (\\(or a comment on this block\\) )?or be unexported"
+    - '(comment on exported )?((method|function|func)( parameter)?|const|var|struct field|type) (`)?[a-zA-Z0-9.*_]+(`)? should be (of the form )?([`"])?[a-zA-Z0-9.* ]+([`"])?'
+    - 'declaration of "(err|ok)" shadows declaration at'
+    - "Error return value of `(ctx.Error|errors.Wrap|\\(\\*github.com\\/gin-gonic\\/gin.Error\\).SetType)` is not checked"
+
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - lll
+
+  exclude-use-default: false
+  max-per-linter: 0
+  max-same-issues: 0

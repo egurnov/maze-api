@@ -1,0 +1,32 @@
+version: "3.6"
+
+services:
+  store:
+    image: mysql:5.7
+    restart: always
+    volumes:
+      - store:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: "maze-api"
+      MYSQL_USER: "user"
+      MYSQL_PASSWORD: "passw0rd"
+      MYSQL_RANDOM_ROOT_PASSWORD: "true"
+    ports:
+      - 3306:3306
+
+  maze-api:
+    image: egurnov/maze-api:latest
+    restart: always
+    depends_on:
+      - store
+    ports:
+      - 8080:8080
+    command: ["-adminEmail", "admin@example.com", "-adminPass", "passw0rd"]
+    environment:
+      DB_URL: "user:passw0rd@(store:3306)/maze-api"
+      PORT: 8080
+      JWT_SIGNGING_KEY: changeme
+      GIN_MODE: release
+
+volumes:
+  store:
