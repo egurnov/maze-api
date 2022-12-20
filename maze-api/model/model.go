@@ -3,9 +3,9 @@ package model
 import "errors"
 
 type User struct {
-	ID           int64  `json:"id,omitempty" binding:"isdefault"`
-	Username     string `json:"username,omitempty" binding:"omitempty,username"`
-	Password     string `json:"password,omitempty" binding:"omitempty,min=6"`
+	ID           int64  `json:"id,omitempty"`
+	Username     string `json:"username,omitempty"`
+	Password     string `json:"password,omitempty"`
 	PasswordHash string `json:"-"`
 }
 

@@ -19,7 +19,7 @@ type App struct {
 	UserService model.UserService
 }
 
-//go:generate swag init -dir ./../../dreamteam --generalInfo ./app/app.go  -o ../../docs
+//go:generate swag init -dir ./../../maze-api --generalInfo ./app/app.go  -o ../../docs
 
 // http://localhost:8080/swagger/index.html
 

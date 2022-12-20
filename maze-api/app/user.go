@@ -37,7 +37,7 @@ func (a *App) GetUserByID(ctx *gin.Context) {
 // @Failure 400 {object} Message
 // @Failure 403 {object} Message
 // @Failure 500 {object} Message
-// @Router /post [post]
+// @Router /user [post]
 func (a *App) CreateUser(ctx *gin.Context) {
 	var user CreateUserDTO
 	err := ctx.ShouldBindJSON(&user)
@@ -65,5 +65,5 @@ func (a *App) CreateUser(ctx *gin.Context) {
 
 type CreateUserDTO struct {
 	Username string `json:"username,omitempty" binding:"omitempty"`
-	Password string `json:"password,omitempty" binding:"omitempty,min=6"`
+	Password string `json:"password,omitempty" binding:"omitempty,min=1"`
 }

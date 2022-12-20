@@ -18,8 +18,8 @@ lint:
 build:
 	go build -o ./build/maze-api ./cmd/maze-api
 
-.PHONY: run-mysql
-run-mysql:
+.PHONY: run
+run:
 	JWT_SIGNING_KEY=changeme \
     DB_URL='root:root@(localhost:3306)/maze_api' \
 	go run ./cmd/maze-api

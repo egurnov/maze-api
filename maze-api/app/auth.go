@@ -14,7 +14,7 @@ const (
 
 // Login godoc
 // @Summary Login to the API
-// @Description Login with e-mail and password, get a token to use for further operations.
+// @Description Login with username and password, get a token to use for further operations.
 // @ID login
 // @Tags Auth
 // @Accept json
