@@ -19,3 +19,8 @@ func (s *MazeService) GetAll(userId int64) ([]*model.Maze, error) {
 func (s *MazeService) Create(maze *model.Maze) (int64, error) {
 	return s.Store.Create(maze)
 }
+
+func (s *MazeService) Solve(id, userId int64, steps string) ([]string, error) {
+	//TODO
+	return []string{}, nil
+}

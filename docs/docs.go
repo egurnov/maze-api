@@ -40,7 +40,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/app.Credentials"
+                            "$ref": "#/definitions/app.LoginCredentialsDTO"
                         }
                     }
                 ],
@@ -48,7 +48,223 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/app.JWTTokenResp"
+                            "$ref": "#/definitions/app.LoginResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    }
+                }
+            }
+        },
+        "/maze": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Maze"
+                ],
+                "summary": "Get all mazes belonging to the current user",
+                "operationId": "GetAllMazes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.GetAllMazesResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Maze"
+                ],
+                "summary": "Create a new maze",
+                "operationId": "CreateMaze",
+                "parameters": [
+                    {
+                        "description": "Maze description",
+                        "name": "maze",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/app.MazeDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/app.IDResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    }
+                }
+            }
+        },
+        "/maze/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Maze"
+                ],
+                "summary": "Get one specific maze belonging to the current user",
+                "operationId": "GetMaze",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "maze id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/app.MazeResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    }
+                }
+            }
+        },
+        "/maze/{id}/solution": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Maze"
+                ],
+                "summary": "Solve a previously stored maze",
+                "operationId": "SolveMaze",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "maze id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "min",
+                            "max"
+                        ],
+                        "type": "string",
+                        "description": "Find shortest or longest path",
+                        "name": "steps",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/app.SolutionResponseDTO"
                         }
                     },
                     "400": {
@@ -93,7 +309,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/app.Credentials"
+                            "$ref": "#/definitions/app.CreateUserRequestDTO"
                         }
                     }
                 ],
@@ -101,7 +317,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/app.IDResponse"
+                            "$ref": "#/definitions/app.IDResponseDTO"
                         }
                     },
                     "400": {
@@ -127,22 +343,30 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "app.Credentials": {
+        "app.CreateUserRequestDTO": {
             "type": "object",
-            "required": [
-                "password",
-                "username"
-            ],
             "properties": {
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1
                 },
                 "username": {
                     "type": "string"
                 }
             }
         },
-        "app.IDResponse": {
+        "app.GetAllMazesResponseDTO": {
+            "type": "object",
+            "properties": {
+                "mazes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/app.MazeResponseDTO"
+                    }
+                }
+            }
+        },
+        "app.IDResponseDTO": {
             "type": "object",
             "properties": {
                 "id": {
@@ -150,11 +374,65 @@ const docTemplate = `{
                 }
             }
         },
-        "app.JWTTokenResp": {
+        "app.LoginCredentialsDTO": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "username": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            }
+        },
+        "app.LoginResponseDTO": {
             "type": "object",
             "properties": {
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "app.MazeDTO": {
+            "type": "object",
+            "properties": {
+                "entrance": {
+                    "type": "string"
+                },
+                "gridSize": {
+                    "type": "string"
+                },
+                "walls": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "app.MazeResponseDTO": {
+            "type": "object",
+            "properties": {
+                "entrance": {
+                    "type": "string"
+                },
+                "gridSize": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "walls": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -163,6 +441,17 @@ const docTemplate = `{
             "properties": {
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "app.SolutionResponseDTO": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         }

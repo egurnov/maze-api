@@ -13,8 +13,8 @@ const (
 )
 
 type LoginCredentialsDTO struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username string `json:"username" binding:"required,min=1"`
+	Password string `json:"password" binding:"required,min=1"`
 }
 
 type LoginResponseDTO struct {
@@ -28,8 +28,8 @@ type LoginResponseDTO struct {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param email body Credentials true "Credentials"
-// @Success 200 {object} JWTTokenResp
+// @Param credentials body LoginCredentialsDTO true "Login credentials"
+// @Success 200 {object} LoginResponseDTO
 // @Failure 400 {object} Message
 // @Failure 403 {object} Message
 // @Failure 500 {object} Message

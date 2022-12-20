@@ -10,8 +10,8 @@ import (
 )
 
 type CreateUserRequestDTO struct {
-	Username string `json:"username,omitempty" binding:"omitempty"`
-	Password string `json:"password,omitempty" binding:"omitempty,min=1"`
+	Username string `json:"username" binding:"omitempty"`
+	Password string `json:"password" binding:"omitempty,min=1"`
 }
 
 type IDResponseDTO struct {
@@ -41,8 +41,8 @@ func (a *App) GetUserByID(ctx *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param credentials body Credentials true "New user credentials"
-// @Success 201 {object} IDResponse
+// @Param credentials body CreateUserRequestDTO true "New user credentials"
+// @Success 201 {object} IDResponseDTO
 // @Failure 400 {object} Message
 // @Failure 403 {object} Message
 // @Failure 500 {object} Message

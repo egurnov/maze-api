@@ -1,0 +1,232 @@
+{
+	"info": {
+		"_postman_id": "dbf51d2d-19ac-475c-a910-d86a1c239b62",
+		"name": "MVPMatch",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24922781"
+	},
+	"item": [
+		{
+			"name": "Create user",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \r\n    \"username\": \"alex1\",\r\n    \"password\": \"testtest\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/user",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \r\n    \"username\": \"alex1\",\r\n    \"password\": \"testtest\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/login",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create maze",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"gridSize\": \"8x10\",\r\n    \"entrance\": \"A2\",\r\n    \"walls\": [\r\n        \"C1\",\r\n        \"G1\",\r\n        \"A2\",\r\n        \"C2\",\r\n        \"E2\",\r\n        \"G2\",\r\n        \"C3\",\r\n        \"E3\",\r\n        \"B4\",\r\n        \"C4\",\r\n        \"E4\",\r\n        \"F4\",\r\n        \"G4\",\r\n        \"B5\",\r\n        \"E5\",\r\n        \"B6\",\r\n        \"D6\",\r\n        \"E6\",\r\n        \"G6\",\r\n        \"H6\",\r\n        \"B7\",\r\n        \"D7\",\r\n        \"G7\",\r\n        \"B8\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/maze",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"maze"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all mazes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"gridSize\": \"8x8\",\r\n    \"entrance\": \"A1\",\r\n    \"walls\": [\r\n        \"C1\",\r\n        \"G1\",\r\n        \"A2\",\r\n        \"C2\",\r\n        \"E2\",\r\n        \"G2\",\r\n        \"C3\",\r\n        \"E3\",\r\n        \"B4\",\r\n        \"C4\",\r\n        \"E4\",\r\n        \"F4\",\r\n        \"G4\",\r\n        \"B5\",\r\n        \"E5\",\r\n        \"B6\",\r\n        \"D6\",\r\n        \"E6\",\r\n        \"G6\",\r\n        \"H6\",\r\n        \"B7\",\r\n        \"D7\",\r\n        \"G7\",\r\n        \"B8\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/maze",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"maze"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get maze",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"gridSize\": \"8x8\",\r\n    \"entrance\": \"A1\",\r\n    \"walls\": [\r\n        \"C1\",\r\n        \"G1\",\r\n        \"A2\",\r\n        \"C2\",\r\n        \"E2\",\r\n        \"G2\",\r\n        \"C3\",\r\n        \"E3\",\r\n        \"B4\",\r\n        \"C4\",\r\n        \"E4\",\r\n        \"F4\",\r\n        \"G4\",\r\n        \"B5\",\r\n        \"E5\",\r\n        \"B6\",\r\n        \"D6\",\r\n        \"E6\",\r\n        \"G6\",\r\n        \"H6\",\r\n        \"B7\",\r\n        \"D7\",\r\n        \"G7\",\r\n        \"B8\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/maze/:id",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"maze",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Solve maze",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"gridSize\": \"8x8\",\r\n    \"entrance\": \"A1\",\r\n    \"walls\": [\r\n        \"C1\",\r\n        \"G1\",\r\n        \"A2\",\r\n        \"C2\",\r\n        \"E2\",\r\n        \"G2\",\r\n        \"C3\",\r\n        \"E3\",\r\n        \"B4\",\r\n        \"C4\",\r\n        \"E4\",\r\n        \"F4\",\r\n        \"G4\",\r\n        \"B5\",\r\n        \"E5\",\r\n        \"B6\",\r\n        \"D6\",\r\n        \"E6\",\r\n        \"G6\",\r\n        \"H6\",\r\n        \"B7\",\r\n        \"D7\",\r\n        \"G7\",\r\n        \"B8\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/maze/:id/solution?steps=min",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"maze",
+						":id",
+						"solution"
+					],
+					"query": [
+						{
+							"key": "steps",
+							"value": "min"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

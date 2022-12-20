@@ -51,6 +51,7 @@ type MazeService interface {
 	GetByID(id, userId int64) (*Maze, error)
 	GetAll(userId int64) ([]*Maze, error)
 	Create(*Maze) (int64, error)
+	Solve(id, userId int64, steps string) ([]string, error)
 }
 
 type JWTService interface {

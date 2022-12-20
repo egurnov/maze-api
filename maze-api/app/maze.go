@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -16,11 +17,17 @@ type MazeDTO struct {
 	Walls    []string `json:"walls"`
 }
 
-type GetAllMazesResponseDTO struct {
-	Mazes []*MazeDTO `json:"mazes"`
+type CreateMazeDTO = MazeDTO
+type MazeResponseDTO struct {
+	ID int64 `json:"id"`
+	MazeDTO
 }
 
-type SolveMazeResponseDTO struct {
+type GetAllMazesResponseDTO struct {
+	Mazes []*MazeResponseDTO `json:"mazes"`
+}
+
+type SolutionResponseDTO struct {
 	Path []string `json:"path"`
 }
 
@@ -30,7 +37,9 @@ type SolveMazeResponseDTO struct {
 // @Tags Maze
 // @Accept json
 // @Produce json
-// @Success 201 {object} IDResponse
+// @Security bearerAuth
+// @Param maze body MazeDTO true "Maze description"
+// @Success 201 {object} IDResponseDTO
 // @Failure 400 {object} Message
 // @Failure 403 {object} Message
 // @Failure 500 {object} Message
@@ -46,7 +55,7 @@ func (a *App) CreateMaze(ctx *gin.Context) {
 
 	rowcol := strings.Split(maze.GridSize, "x")
 	if len(rowcol) != 2 {
-		ctx.Error(err).SetType(BadRequestErrorType)
+		ctx.Error(errors.New("invalid grid size value")).SetType(BadRequestErrorType)
 	}
 	rows, err := strconv.Atoi(rowcol[0])
 	if err != nil {
@@ -78,8 +87,9 @@ func (a *App) CreateMaze(ctx *gin.Context) {
 // @Tags Maze
 // @Accept json
 // @Produce json
-// @Param   id  query     integer     true  "maze id"
-// @Success 200 {object} GetAllMazesResponseDTO
+// @Security bearerAuth
+// @Param   id  path     integer     true  "maze id"
+// @Success 200 {object} MazeResponseDTO
 // @Failure 400 {object} Message
 // @Failure 403 {object} Message
 // @Failure 500 {object} Message
@@ -97,10 +107,13 @@ func (a *App) GetMaze(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, &MazeDTO{
-		GridSize: fmt.Sprintf("%dx%d", res.Rows, res.Cols),
-		Entrance: res.Entrance,
-		Walls:    res.Walls,
+	ctx.JSON(http.StatusOK, &MazeResponseDTO{
+		ID: res.ID,
+		MazeDTO: MazeDTO{
+			GridSize: fmt.Sprintf("%dx%d", res.Rows, res.Cols),
+			Entrance: res.Entrance,
+			Walls:    res.Walls,
+		},
 	})
 }
 
@@ -110,6 +123,7 @@ func (a *App) GetMaze(ctx *gin.Context) {
 // @Tags Maze
 // @Accept json
 // @Produce json
+// @Security bearerAuth
 // @Success 200 {object} GetAllMazesResponseDTO
 // @Failure 400 {object} Message
 // @Failure 500 {object} Message
@@ -122,12 +136,15 @@ func (a *App) GetAllMazes(ctx *gin.Context) {
 		return
 	}
 
-	allMazes := &GetAllMazesResponseDTO{Mazes: make([]*MazeDTO, len(res))}
+	allMazes := &GetAllMazesResponseDTO{Mazes: make([]*MazeResponseDTO, len(res))}
 	for i, m := range res {
-		allMazes.Mazes[i] = &MazeDTO{
-			GridSize: fmt.Sprintf("%dx%d", m.Rows, m.Cols),
-			Entrance: m.Entrance,
-			Walls:    m.Walls,
+		allMazes.Mazes[i] = &MazeResponseDTO{
+			ID: m.ID,
+			MazeDTO: MazeDTO{
+				GridSize: fmt.Sprintf("%dx%d", m.Rows, m.Cols),
+				Entrance: m.Entrance,
+				Walls:    m.Walls,
+			},
 		}
 	}
 
@@ -140,12 +157,34 @@ func (a *App) GetAllMazes(ctx *gin.Context) {
 // @Tags Maze
 // @Accept json
 // @Produce json
-// @Param   steps   query     string     true  "maze id"       Enums(min, max)
-// @Success 201 {object} IDResponse
+// @Security bearerAuth
+// @Param   id  		path     integer    true  "maze id"
+// @Param   steps   query     string     true  "Find shortest or longest path"       Enums(min, max)
+// @Success 201 {object} SolutionResponseDTO
 // @Failure 400 {object} Message
 // @Failure 403 {object} Message
 // @Failure 500 {object} Message
 // @Router /maze/{id}/solution [get]
 func (a *App) SolveMaze(ctx *gin.Context) {
-	ctx.JSON(http.StatusCreated, nil)
+	id, err := strconv.ParseInt(ctx.Param("id"), 0, 64)
+	if err != nil {
+		ctx.Error(err).SetType(BadRequestErrorType)
+		return
+	}
+
+	steps := ctx.Query("steps")
+	if steps != "min" && steps != "max" {
+		ctx.Error(errors.New("invalid steps value")).SetType(BadRequestErrorType)
+		return
+	}
+
+	res, err := a.MazeService.Solve(id, ctx.GetInt64(CTXUserID), steps)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, &SolutionResponseDTO{
+		Path: res,
+	})
 }

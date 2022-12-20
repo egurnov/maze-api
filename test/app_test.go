@@ -61,7 +61,7 @@ var _ = Describe("App", func() {
 			Expect(resp.StatusCode).To(Equal(http.StatusOK))
 			var maze Maze
 			Expect(json.NewDecoder(resp.Body).Decode(&maze)).To(Succeed())
-			Expect(maze).To(Equal(Maze{GridSize: "8x10", Entrance: "A1", Walls: []string{"C1", "G1", "A2"}}))
+			Expect(maze).To(Equal(Maze{ID: mazeId, GridSize: "8x10", Entrance: "A1", Walls: []string{"C1", "G1", "A2"}}))
 		}
 
 		By("get all")
@@ -72,7 +72,7 @@ var _ = Describe("App", func() {
 			Expect(json.NewDecoder(resp.Body).Decode(&mazes)).To(Succeed())
 
 			Expect(mazes.Mazes).To(HaveLen(1))
-			Expect(mazes.Mazes[0]).To(Equal(Maze{GridSize: "8x10", Entrance: "A1", Walls: []string{"C1", "G1", "A2"}}))
+			Expect(mazes.Mazes[0]).To(Equal(Maze{ID: mazeId, GridSize: "8x10", Entrance: "A1", Walls: []string{"C1", "G1", "A2"}}))
 		}
 
 		By("other user")
@@ -98,6 +98,7 @@ var _ = Describe("App", func() {
 })
 
 type Maze struct {
+	ID       int64
 	GridSize string
 	Entrance string
 	Walls    []string

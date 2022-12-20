@@ -1,29 +1,77 @@
 basePath: /
 definitions:
-  app.Credentials:
+  app.CreateUserRequestDTO:
     properties:
       password:
+        minLength: 1
         type: string
       username:
+        type: string
+    type: object
+  app.GetAllMazesResponseDTO:
+    properties:
+      mazes:
+        items:
+          $ref: '#/definitions/app.MazeResponseDTO'
+        type: array
+    type: object
+  app.IDResponseDTO:
+    properties:
+      id:
+        type: integer
+    type: object
+  app.LoginCredentialsDTO:
+    properties:
+      password:
+        minLength: 1
+        type: string
+      username:
+        minLength: 1
         type: string
     required:
     - password
     - username
     type: object
-  app.IDResponse:
-    properties:
-      id:
-        type: integer
-    type: object
-  app.JWTTokenResp:
+  app.LoginResponseDTO:
     properties:
       token:
         type: string
+    type: object
+  app.MazeDTO:
+    properties:
+      entrance:
+        type: string
+      gridSize:
+        type: string
+      walls:
+        items:
+          type: string
+        type: array
+    type: object
+  app.MazeResponseDTO:
+    properties:
+      entrance:
+        type: string
+      gridSize:
+        type: string
+      id:
+        type: integer
+      walls:
+        items:
+          type: string
+        type: array
     type: object
   app.Message:
     properties:
       message:
         type: string
+    type: object
+  app.SolutionResponseDTO:
+    properties:
+      path:
+        items:
+          type: string
+        type: array
     type: object
 host: localhost:8080
 info:
@@ -47,14 +95,14 @@ paths:
         name: email
         required: true
         schema:
-          $ref: '#/definitions/app.Credentials'
+          $ref: '#/definitions/app.LoginCredentialsDTO'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/app.JWTTokenResp'
+            $ref: '#/definitions/app.LoginResponseDTO'
         "400":
           description: Bad Request
           schema:
@@ -70,6 +118,144 @@ paths:
       summary: Login to the API
       tags:
       - Auth
+  /maze:
+    get:
+      consumes:
+      - application/json
+      operationId: GetAllMazes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.GetAllMazesResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/app.Message'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Message'
+      security:
+      - bearerAuth: []
+      summary: Get all mazes belonging to the current user
+      tags:
+      - Maze
+    post:
+      consumes:
+      - application/json
+      operationId: CreateMaze
+      parameters:
+      - description: Maze description
+        in: body
+        name: maze
+        required: true
+        schema:
+          $ref: '#/definitions/app.MazeDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/app.IDResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/app.Message'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/app.Message'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Message'
+      security:
+      - bearerAuth: []
+      summary: Create a new maze
+      tags:
+      - Maze
+  /maze/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: GetMaze
+      parameters:
+      - description: maze id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/app.MazeResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/app.Message'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/app.Message'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Message'
+      security:
+      - bearerAuth: []
+      summary: Get one specific maze belonging to the current user
+      tags:
+      - Maze
+  /maze/{id}/solution:
+    get:
+      consumes:
+      - application/json
+      operationId: SolveMaze
+      parameters:
+      - description: maze id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Find shortest or longest path
+        enum:
+        - min
+        - max
+        in: query
+        name: steps
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/app.SolutionResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/app.Message'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/app.Message'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/app.Message'
+      security:
+      - bearerAuth: []
+      summary: Solve a previously stored maze
+      tags:
+      - Maze
   /user:
     post:
       consumes:
@@ -82,14 +268,14 @@ paths:
         name: credentials
         required: true
         schema:
-          $ref: '#/definitions/app.Credentials'
+          $ref: '#/definitions/app.CreateUserRequestDTO'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/app.IDResponse'
+            $ref: '#/definitions/app.IDResponseDTO'
         "400":
           description: Bad Request
           schema:
