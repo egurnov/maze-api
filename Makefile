@@ -73,3 +73,7 @@ down:
 .PHONY: swag
 swag:
 	swag init -dir ./maze-api --generalInfo ./app/app.go
+
+.PHONY: generate
+generate:
+	(cd ./maze-api/app && go generate)
