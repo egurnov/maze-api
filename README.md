@@ -42,3 +42,13 @@ make docker-build up
 
 # API Docs
 When running locally go to http://localhost:8080/swagger/index.html
+
+
+# Heroku
+To deploy to Heroku:
+```
+heroku login
+heroku container:login
+heroku container:push web --app egurnov-maze-api
+heroku container:release web --app egurnov-maze-api
+```

@@ -21,7 +21,7 @@ build:
 .PHONY: run
 run:
 	JWT_SIGNING_KEY=changeme \
-    DB_URL='root:root@(localhost:3306)/maze_api' \
+	DB_URL='root:root@(localhost:3306)/maze_api' \
 	go run ./cmd/maze-api
 
 .PHONY: clean
@@ -42,7 +42,7 @@ docker-build-dev:
 .PHONY: docker-run
 docker-run:
 	docker run --rm -p 8080:8080 \
-      -e JWT_SINGING_KEY=changeme \
+      -e JWT_SIGNING_KEY=changeme \
       -e DB_URL='root@(host.docker.internal:3306)/maze-api' \
       $(img)
 

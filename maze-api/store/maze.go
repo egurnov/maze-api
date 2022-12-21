@@ -15,7 +15,7 @@ type Maze struct {
 	Rows     int    `gorm:"not null;type:int"`
 	Cols     int    `gorm:"not null;type:int"`
 	Entrance string `gorm:"not null;type:varchar(100)"`
-	Walls    string `gorm:"not null;type:varchar(1000)"`
+	Walls    string `gorm:"not null;type:varchar(500)"`
 
 	UserID int64 `json:"-"`
 }

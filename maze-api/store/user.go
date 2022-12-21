@@ -10,7 +10,7 @@ type UserStore struct{ *Store }
 
 type User struct {
 	ID           int64  `json:"id,omitempty" gorm:"primary_key;auto_increment"`
-	Username     string `json:"username,omitempty" gorm:"unique;not null;type:varchar(256)"`
+	Username     string `json:"username,omitempty" gorm:"unique;not null;type:varchar(100)"`
 	PasswordHash string `json:"-" gorm:"not null;type:varchar(100)"`
 
 	Mazes []*Maze `json:"omitempty"`

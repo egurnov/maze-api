@@ -21,7 +21,6 @@ services:
       - store
     ports:
       - 8080:8080
-    command: ["-adminEmail", "admin@example.com", "-adminPass", "passw0rd"]
     environment:
       DB_URL: "user:passw0rd@(store:3306)/maze-api"
       PORT: 8080
