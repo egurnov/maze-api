@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/egurnov/maze-api/maze-api/model"
+	"github.com/egurnov/maze-api/maze-api/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -56,14 +57,31 @@ func (a *App) CreateMaze(ctx *gin.Context) {
 	rowcol := strings.Split(maze.GridSize, "x")
 	if len(rowcol) != 2 {
 		ctx.Error(errors.New("invalid grid size value")).SetType(BadRequestErrorType)
+		return
 	}
 	rows, err := strconv.Atoi(rowcol[0])
 	if err != nil {
 		ctx.Error(err).SetType(BadRequestErrorType)
+		return
 	}
 	cols, err := strconv.Atoi(rowcol[1])
 	if err != nil {
 		ctx.Error(err).SetType(BadRequestErrorType)
+		return
+	}
+	if _, err := service.ParseCoords(maze.Entrance); err != nil {
+		ctx.Error(errors.New("invalid entrance: " + maze.Entrance)).SetType(BadRequestErrorType)
+		return
+	}
+	for _, wall := range maze.Walls {
+		if wall == maze.Entrance {
+			ctx.Error(errors.New("entrance cannot be a wall")).SetType(BadRequestErrorType)
+			return
+		}
+		if _, err := service.ParseCoords(wall); err != nil {
+			ctx.Error(errors.New("invalid wall: " + wall)).SetType(BadRequestErrorType)
+			return
+		}
 	}
 
 	id, err := a.MazeService.Create(&model.Maze{

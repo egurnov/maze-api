@@ -37,6 +37,8 @@ func (a *App) renderErrors() gin.HandlerFunc {
 				ctx.JSON(http.StatusForbidden, &Message{Message: err.Error()})
 			case model.ErrorUnauthorized:
 				ctx.JSON(http.StatusUnauthorized, &Message{Message: err.Error()})
+			case model.ErrorNoSolution:
+				ctx.JSON(http.StatusNotFound, &Message{Message: err.Error()})
 			default:
 				switch err.Type {
 				case BadRequestErrorType, NotFoundErrorType:

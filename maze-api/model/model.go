@@ -3,7 +3,8 @@ package model
 import "errors"
 
 type User struct {
-	ID           int64  `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
+
 	Username     string `json:"username,omitempty"`
 	Password     string `json:"password,omitempty"`
 	PasswordHash string `json:"-"`
@@ -13,7 +14,8 @@ type User struct {
 }
 
 type Maze struct {
-	ID       int64
+	ID int64
+
 	Rows     int
 	Cols     int
 	Entrance string
@@ -65,4 +67,5 @@ var (
 	ErrNotFound            = errors.New("not found")
 	ErrNotAllowed          = errors.New("not allowed")
 	ErrorUnauthorized      = errors.New("unauthorized")
+	ErrorNoSolution        = errors.New("no solution")
 )
