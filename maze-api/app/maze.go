@@ -54,34 +54,10 @@ func (a *App) CreateMaze(ctx *gin.Context) {
 		return
 	}
 
-	rowcol := strings.Split(maze.GridSize, "x")
-	if len(rowcol) != 2 {
-		ctx.Error(errors.New("invalid grid size value")).SetType(BadRequestErrorType)
-		return
-	}
-	rows, err := strconv.Atoi(rowcol[0])
+	rows, cols, err := ValidateMaze(maze)
 	if err != nil {
 		ctx.Error(err).SetType(BadRequestErrorType)
 		return
-	}
-	cols, err := strconv.Atoi(rowcol[1])
-	if err != nil {
-		ctx.Error(err).SetType(BadRequestErrorType)
-		return
-	}
-	if _, err := service.ParseCoords(maze.Entrance); err != nil {
-		ctx.Error(errors.New("invalid entrance: " + maze.Entrance)).SetType(BadRequestErrorType)
-		return
-	}
-	for _, wall := range maze.Walls {
-		if wall == maze.Entrance {
-			ctx.Error(errors.New("entrance cannot be a wall")).SetType(BadRequestErrorType)
-			return
-		}
-		if _, err := service.ParseCoords(wall); err != nil {
-			ctx.Error(errors.New("invalid wall: " + wall)).SetType(BadRequestErrorType)
-			return
-		}
 	}
 
 	id, err := a.MazeService.Create(&model.Maze{
@@ -97,6 +73,57 @@ func (a *App) CreateMaze(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, IDResponseDTO{ID: id})
+}
+
+func ValidateMaze(maze MazeDTO) (rows, cols int, err error) {
+	// Grid size validation
+	rowcol := strings.Split(maze.GridSize, "x")
+	if len(rowcol) != 2 {
+		return 0, 0, errors.New("invalid grid size value")
+	}
+	rows, err = strconv.Atoi(rowcol[0])
+	if err != nil {
+		return 0, 0, errors.New("invalid rows value: " + err.Error())
+	}
+	cols, err = strconv.Atoi(rowcol[1])
+	if err != nil {
+		return 0, 0, errors.New("invalid cols value: " + err.Error())
+	}
+
+	// Entrance validation
+	if coords, err := service.ParseCoords(maze.Entrance); err != nil || !service.AreValid(coords, rows, cols) {
+		return 0, 0, errors.New("invalid entrance: " + maze.Entrance)
+	}
+
+	// Walls validation
+	lastRow := make([]bool, cols)
+	for _, wall := range maze.Walls {
+		if wall == maze.Entrance {
+			return 0, 0, errors.New("entrance cannot be a wall")
+		}
+
+		coords, err := service.ParseCoords(wall)
+		if err != nil || !service.AreValid(coords, rows, cols) {
+			return 0, 0, errors.New("invalid wall: " + wall)
+		}
+
+		if coords.Row == rows-1 {
+			lastRow[coords.Col] = true
+		}
+	}
+
+	// Exit point validation
+	count := 0
+	for _, cell := range lastRow {
+		if !cell {
+			count++
+		}
+	}
+	if count != 1 {
+		return 0, 0, errors.New("invalid exit point")
+	}
+
+	return rows, cols, nil
 }
 
 // GetMaze godoc

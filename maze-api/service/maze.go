@@ -148,6 +148,7 @@ bfs:
 	return nil, model.ErrorNoSolution
 }
 
+// 0-based coordinates in the maze. Valid values are 0 <= row < rows, 0 <= col < cols.
 type Coords struct {
 	Row, Col int
 }
@@ -174,6 +175,10 @@ func ParseCoords(s string) (Coords, error) {
 		return Coords{}, model.ErrInvalidInput
 	}
 	return Coords{row - 1, col - 1}, nil
+}
+
+func AreValid(c Coords, rows, cols int) bool {
+	return 0 <= c.Row && c.Row < rows && 0 <= c.Col && c.Col < cols
 }
 
 func CoordsToA1(coords Coords) string {

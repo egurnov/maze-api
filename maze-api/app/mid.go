@@ -10,7 +10,6 @@ import (
 
 const (
 	BadRequestErrorType gin.ErrorType = 3
-	NotFoundErrorType   gin.ErrorType = 4
 )
 
 type Message struct {
@@ -41,7 +40,7 @@ func (a *App) renderErrors() gin.HandlerFunc {
 				ctx.JSON(http.StatusNotFound, &Message{Message: err.Error()})
 			default:
 				switch err.Type {
-				case BadRequestErrorType, NotFoundErrorType:
+				case BadRequestErrorType:
 					ctx.JSON(http.StatusBadRequest, &Message{Message: err.Error()})
 				default:
 					a.Log.WithField("url", ctx.Request.URL.String()).Error(err)
