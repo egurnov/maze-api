@@ -10,7 +10,7 @@ import (
 	"github.com/egurnov/maze-api/maze-api/service"
 )
 
-func TestParseCoords(t *testing.T) {
+func TestA1ToCoords(t *testing.T) {
 	testCases := []struct {
 		in     string
 		expRow int
@@ -36,7 +36,7 @@ func TestParseCoords(t *testing.T) {
 		t.Run(tc.in, func(t *testing.T) {
 			g := NewWithT(t)
 
-			coords, err := service.ParseCoords(tc.in)
+			coords, err := service.A1ToCoords(tc.in)
 
 			g.Expect(err != nil).To(Equal(tc.expErr))
 			g.Expect(coords).To(Equal(service.Coords{tc.expRow, tc.expCol}))
