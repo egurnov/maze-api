@@ -1,6 +1,9 @@
 package model
 
-import "errors"
+import (
+	"context"
+	"errors"
+)
 
 type User struct {
 	ID int64 `json:"id,omitempty"`
@@ -53,7 +56,7 @@ type MazeService interface {
 	GetByID(id, userId int64) (*Maze, error)
 	GetAll(userId int64) ([]*Maze, error)
 	Create(*Maze) (int64, error)
-	Solve(id, userId int64, steps string) ([]string, error)
+	Solve(ctx context.Context, id, userId int64, steps string) ([]string, error)
 }
 
 type JWTService interface {
@@ -68,4 +71,5 @@ var (
 	ErrNotAllowed          = errors.New("not allowed")
 	ErrorUnauthorized      = errors.New("unauthorized")
 	ErrorNoSolution        = errors.New("no solution")
+	ErrorTimelimitReached  = errors.New("time limit reached")
 )

@@ -1,7 +1,7 @@
 package service
 
 import (
-	"errors"
+	"context"
 	"fmt"
 	"strconv"
 
@@ -26,16 +26,16 @@ func (s *MazeService) Create(maze *model.Maze) (int64, error) {
 	return s.Store.Create(maze)
 }
 
-func (s *MazeService) Solve(id, userId int64, steps string) ([]string, error) {
+func (s *MazeService) Solve(ctx context.Context, id, userId int64, steps string) ([]string, error) {
 	maze, err := s.Store.GetByID(id, userId)
 	if err != nil {
 		return nil, err
 	}
 
-	return Solve(maze.Rows, maze.Cols, maze.Entrance, maze.Walls, steps)
+	return Solve(ctx, maze.Rows, maze.Cols, maze.Entrance, maze.Walls, steps)
 }
 
-func Solve(rows, cols int, entrance string, walls []string, steps string) ([]string, error) {
+func Solve(ctx context.Context, rows, cols int, entrance string, walls []string, steps string) ([]string, error) {
 	maze := make([][]bool, rows)
 	for i := range maze {
 		maze[i] = make([]bool, cols)
@@ -49,18 +49,7 @@ func Solve(rows, cols int, entrance string, walls []string, steps string) ([]str
 		maze[c.Row][c.Col] = true
 	}
 
-	// DEBUG
-	for _, row := range maze {
-		for _, cell := range row {
-			if cell {
-				fmt.Print(" ")
-			} else {
-				fmt.Print("X")
-			}
-		}
-		fmt.Println()
-	}
-	//DEBUG
+	// printMaze(maze) // DEBUG
 
 	start, err := ParseCoords(entrance)
 	if err != nil {
@@ -70,9 +59,9 @@ func Solve(rows, cols int, entrance string, walls []string, steps string) ([]str
 	var res []Coords
 	switch steps {
 	case StepsMin:
-		res, err = solveMin(maze, start)
+		res, err = solveMin(ctx, maze, start)
 	case StepsMax:
-		err = errors.New("not implemented") //TODO
+		res, err = solveMax(ctx, maze, start)
 	default:
 		return nil, model.ErrInvalidInput
 	}
@@ -88,48 +77,153 @@ func Solve(rows, cols int, entrance string, walls []string, steps string) ([]str
 	return resStr, nil
 }
 
-func solveMin(maze [][]bool, start Coords) ([]Coords, error) {
-	type QueueEntry struct {
+// SolveMax uses a non-recursive Depth First Search algorithm.
+// For this kind of graph there is no polinomial time solution, so exponential is the best we can do.
+// Because we manage our own stack, it also represents the current path.
+func solveMax(ctx context.Context, maze [][]bool, start Coords) ([]Coords, error) {
+	// Init
+	type StackEntry struct {
 		Coords
-		prev int
-		len  int
+		deltaI int
 	}
-	q := []QueueEntry{{start, -1, 0}}
-	rowLim := len(maze)
-	colLim := len(maze[0])
-	exit := -1
+	st := []*StackEntry{{start, 0}}
+	rows := len(maze)
+	cols := len(maze[0])
+	var res []Coords
 
-	been := make([][]bool, rowLim)
+	been := make([][]bool, rows)
 	for i := range been {
-		been[i] = make([]bool, colLim)
+		been[i] = make([]bool, cols)
 	}
 	been[start.Row][start.Col] = true
 
-bfs:
-	for i := 0; i < len(q); i++ {
-		cur := q[i]
+	deltas := []Coords{{+1, 0}, {-1, 0}, {0, +1}, {0, -1}}
 
-		// fmt.Printf(">>> Vising %v\n", cur)
+	// Main DFS loop
+dfs:
+	for len(st) > 0 {
+		// Timelimit check
+		select {
+		case <-ctx.Done():
+			return nil, model.ErrorTimelimitReached
+		default:
+		}
 
-		for _, delta := range []Coords{{+1, 0}, {-1, 0}, {0, +1}, {0, -1}} {
+		// Take stack top
+		cur := st[len(st)-1]
+		been[cur.Row][cur.Col] = true
 
-			// fmt.Printf(">>> Trying %v\n", Coords{cur.Row + delta.Row, cur.Col + delta.Col})
+		// fmt.Printf(">>> Vising %v\n", cur) // DEBUG
 
-			if 0 <= cur.Row+delta.Row && cur.Row+delta.Row < rowLim &&
-				0 <= cur.Col+delta.Col && cur.Col+delta.Col < colLim &&
+		// Check exit conditions
+		if cur.Row == rows-1 {
+			if len(st) > len(res) {
+				res = make([]Coords, len(st))
+				for i := range st {
+					res[i] = st[i].Coords
+				}
+			}
+
+			// Don't go anywhere from exit
+			cur.deltaI = len(deltas)
+		}
+
+		// Iterate directions
+		for cur.deltaI < len(deltas) {
+			delta := deltas[cur.deltaI]
+			cur.deltaI++
+
+			// fmt.Printf(">>> Trying %v\n", Coords{cur.Row + delta.Row, cur.Col + delta.Col}) // DEBUG
+
+			// If can go in this direction
+			if 0 <= cur.Row+delta.Row && cur.Row+delta.Row < rows &&
+				0 <= cur.Col+delta.Col && cur.Col+delta.Col < cols &&
 				!maze[cur.Row+delta.Row][cur.Col+delta.Col] &&
 				!been[cur.Row+delta.Row][cur.Col+delta.Col] {
 
-				// fmt.Printf(">>> Adding %v\n", Coords{cur.Row + delta.Row, cur.Col + delta.Col})
+				// fmt.Printf(">>> Adding %v\n", Coords{cur.Row + delta.Row, cur.Col + delta.Col}) // DEBUG
 
+				// Add to stack
+				st = append(st, &StackEntry{
+					Coords: Coords{cur.Row + delta.Row, cur.Col + delta.Col},
+				})
+				continue dfs
+			}
+		}
+
+		// Pop stack
+		if cur.deltaI == len(deltas) {
+			been[cur.Row][cur.Col] = false
+			st = st[:len(st)-1]
+		}
+	}
+
+	if res == nil {
+		return nil, model.ErrorNoSolution
+	}
+	return res, nil
+}
+
+// SolveMin uses a non-recursive Breadth First Search algorithm. Visited cells are added to a queue and processed in order.
+// Because there are no weights in the graph, all path lenghts in the queue will be in non-decreasing order.
+// Execution time is O(number of reachable cells), in the worst case O(rows*columns).
+func solveMin(ctx context.Context, maze [][]bool, start Coords) ([]Coords, error) {
+	// Init
+	type QueueEntry struct {
+		Coords
+		prev int // Index in the queue for the previous cell on the shortest path to this one
+		len  int // Length of the sortest path to this cell
+	}
+	q := []QueueEntry{{start, -1, 0}}
+	rows := len(maze)
+	cols := len(maze[0])
+	exit := -1 // Index in the queue for the exit cell
+
+	been := make([][]bool, rows)
+	for i := range been {
+		been[i] = make([]bool, cols)
+	}
+	been[start.Row][start.Col] = true
+
+	// Main BFS loop
+bfs:
+	for i := 0; i < len(q); i++ {
+		// Timelimit check
+		select {
+		case <-ctx.Done():
+			return nil, model.ErrorTimelimitReached
+		default:
+		}
+
+		// Take the next cell from the queue
+		cur := q[i]
+
+		// fmt.Printf(">>> Vising %v\n", cur) // DEBUG
+
+		// Iterate directions
+		for _, delta := range []Coords{{+1, 0}, {-1, 0}, {0, +1}, {0, -1}} {
+
+			// fmt.Printf(">>> Trying %v\n", Coords{cur.Row + delta.Row, cur.Col + delta.Col}) // DEBUG
+
+			// If can go in this direction
+			if 0 <= cur.Row+delta.Row && cur.Row+delta.Row < rows &&
+				0 <= cur.Col+delta.Col && cur.Col+delta.Col < cols &&
+				!maze[cur.Row+delta.Row][cur.Col+delta.Col] &&
+				!been[cur.Row+delta.Row][cur.Col+delta.Col] {
+
+				// fmt.Printf(">>> Adding %v\n", Coords{cur.Row + delta.Row, cur.Col + delta.Col}) // DEBUG
+
+				// Add to queue
 				q = append(q, QueueEntry{
 					Coords: Coords{cur.Row + delta.Row, cur.Col + delta.Col},
 					prev:   i,
 					len:    cur.len + 1,
 				})
+				// Marking visited cells early to avoid adding them multiple times
 				been[cur.Row+delta.Row][cur.Col+delta.Col] = true
 
-				if cur.Row+delta.Row == rowLim-1 {
+				// Check exit condition. The first path we find is the shortest.
+				if cur.Row+delta.Row == rows-1 {
 					exit = len(q) - 1
 					break bfs
 				}
@@ -137,6 +231,7 @@ bfs:
 		}
 	}
 
+	// Build path
 	if exit > 0 {
 		res := make([]Coords, q[exit].len+1)
 		for i := exit; i >= 0; i = q[i].prev {
@@ -194,4 +289,17 @@ func CoordsToA1(coords Coords) string {
 
 	}
 	return res + strconv.Itoa(coords.Row+1)
+}
+
+func printMaze(maze [][]bool) {
+	for _, row := range maze {
+		for _, cell := range row {
+			if cell {
+				fmt.Print(" ")
+			} else {
+				fmt.Print("X")
+			}
+		}
+		fmt.Println()
+	}
 }

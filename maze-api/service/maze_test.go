@@ -1,7 +1,9 @@
 package service_test
 
 import (
+	"context"
 	"testing"
+	"time"
 
 	. "github.com/onsi/gomega"
 
@@ -71,11 +73,11 @@ func TestCoordsToA1(t *testing.T) {
 	}
 }
 
-func TestSolve(t *testing.T) {
+func TestSolveMin(t *testing.T) {
 	t.Run("example", func(t *testing.T) {
-		res, err := service.Solve(8, 8, "A1", []string{"C1", "G1", "A2", "C2", "E2",
-			"G2", "C3", "E3", "B4", "C4", "E4", "F4", "G4", "B5", "E5", "B6", "D6",
-			"E6", "G6", "H6", "B7", "D7", "G7", "B8"}, "min")
+		ctx := context.Background()
+
+		res, err := service.Solve(ctx, 8, 8, "A1", []string{"C1", "G1", "A2", "C2", "E2", "G2", "C3", "E3", "B4", "C4", "E4", "F4", "G4", "B5", "E5", "B6", "D6", "E6", "G6", "H6", "B7", "D7", "G7", "B8"}, "min")
 
 		g := NewWithT(t)
 		g.Expect(err).ToNot(HaveOccurred())
@@ -83,13 +85,65 @@ func TestSolve(t *testing.T) {
 	})
 
 	t.Run("no solution", func(t *testing.T) {
-		res, err := service.Solve(8, 8, "A1", []string{"C1", "G1", "A2", "C2", "E2",
-			"G2", "C3", "E3", "B4", "C4", "E4", "F4", "G4", "B5", "E5", "B6", "D6",
-			"E6", "G6", "H6", "B7", "D7", "G7", "B8", "A8"}, "min")
+		ctx := context.Background()
+
+		res, err := service.Solve(ctx, 8, 8, "A1", []string{"C1", "G1", "A2", "C2", "E2", "G2", "C3", "E3", "B4", "C4", "E4", "F4", "G4", "B5", "E5", "B6", "D6", "E6", "G6", "H6", "B7", "D7", "G7", "B8", "A8"}, "min")
 
 		g := NewWithT(t)
 		g.Expect(err).To(MatchError("no solution"))
 		g.Expect(res).To(BeNil())
 	})
 
+	t.Run("2 paths", func(t *testing.T) {
+		ctx := context.Background()
+
+		res, err := service.Solve(ctx, 8, 8, "A1", []string{"C1", "G1", "A2", "C2", "D2", "E2", "G2", "E3", "B4", "C4", "E4", "F4", "G4", "C6", "E5", "B6", "D6", "E6", "G6", "H6", "B7", "D7", "G7", "B8"}, "min")
+
+		g := NewWithT(t)
+		g.Expect(err).ToNot(HaveOccurred())
+		g.Expect(res).To(Equal([]string{"A1", "B1", "B2", "B3", "A3", "A4", "A5", "A6", "A7", "A8"}))
+	})
+}
+
+func TestSolveMax(t *testing.T) {
+	t.Run("example", func(t *testing.T) {
+		ctx := context.Background()
+
+		res, err := service.Solve(ctx, 8, 8, "A1", []string{"C1", "G1", "A2", "C2", "E2", "G2", "C3", "E3", "B4", "C4", "E4", "F4", "G4", "B5", "E5", "B6", "D6", "E6", "G6", "H6", "B7", "D7", "G7", "B8"}, "max")
+
+		g := NewWithT(t)
+		g.Expect(err).ToNot(HaveOccurred())
+		g.Expect(res).To(Equal([]string{"A1", "B1", "B2", "B3", "A3", "A4", "A5", "A6", "A7", "A8"}))
+	})
+
+	t.Run("no solution", func(t *testing.T) {
+		ctx := context.Background()
+
+		res, err := service.Solve(ctx, 8, 8, "A1", []string{"C1", "G1", "A2", "C2", "E2", "G2", "C3", "E3", "B4", "C4", "E4", "F4", "G4", "B5", "E5", "B6", "D6", "E6", "G6", "H6", "B7", "D7", "G7", "B8", "A8"}, "max")
+
+		g := NewWithT(t)
+		g.Expect(err).To(MatchError("no solution"))
+		g.Expect(res).To(BeNil())
+	})
+
+	t.Run("2 paths", func(t *testing.T) {
+		ctx := context.Background()
+
+		res, err := service.Solve(ctx, 8, 8, "A1", []string{"C1", "G1", "A2", "C2", "D2", "E2", "G2", "E3", "B4", "C4", "E4", "F4", "G4", "C6", "E5", "B6", "D6", "E6", "G6", "H6", "B7", "D7", "G7", "B8"}, "max")
+
+		g := NewWithT(t)
+		g.Expect(err).ToNot(HaveOccurred())
+		g.Expect(res).To(Equal([]string{"A1", "B1", "B2", "B3", "C3", "D3", "D4", "D5", "C5", "B5", "A5", "A6", "A7", "A8"}))
+	})
+
+	t.Run("timelimit", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+
+		res, err := service.Solve(ctx, 10, 10, "A1", []string{"A10", "B10", "C10", "D10", "E10", "F10", "G10", "H10", "I10"}, "max")
+
+		g := NewWithT(t)
+		g.Expect(err).To(MatchError("time limit reached"))
+		g.Expect(res).To(BeNil())
+	})
 }

@@ -15,6 +15,15 @@ func TestValidateMaze(t *testing.T) {
 		expErr string
 	}{
 		{
+			desc: "example",
+			maze: app.MazeDTO{
+				GridSize: "8x8",
+				Entrance: "A1",
+				Walls:    []string{"C1", "G1", "A2", "C2", "E2", "G2", "C3", "E3", "B4", "C4", "E4", "F4", "G4", "B5", "E5", "B6", "D6", "E6", "G6", "H6", "B7", "D7", "G7", "B8", "A8"},
+			},
+			expErr: "",
+		},
+		{
 			desc: "valid",
 			maze: app.MazeDTO{
 				GridSize: "4x4",

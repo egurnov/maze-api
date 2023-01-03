@@ -1,16 +1,20 @@
 package app
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/egurnov/maze-api/maze-api/model"
 	"github.com/egurnov/maze-api/maze-api/service"
 	"github.com/gin-gonic/gin"
 )
+
+const SolveTimeout = 5 * time.Second
 
 type MazeDTO struct {
 	GridSize string   `json:"gridSize"`
@@ -223,7 +227,10 @@ func (a *App) SolveMaze(ctx *gin.Context) {
 		return
 	}
 
-	res, err := a.MazeService.Solve(id, ctx.GetInt64(CTXUserID), steps)
+	solveCtx, cancel := context.WithTimeout(ctx.Request.Context(), SolveTimeout)
+	defer cancel()
+
+	res, err := a.MazeService.Solve(solveCtx, id, ctx.GetInt64(CTXUserID), steps)
 	if err != nil {
 		ctx.Error(err)
 		return

@@ -28,11 +28,6 @@ type Config struct {
 	DBURL  string `envconfig:"DB_URL" required:"true"` // default:"root@(localhost:3306)/dreamteam"
 }
 
-var (
-	adminEmail = flag.String("adminEmail", "", "Email for admin account initialization")
-	adminPass  = flag.String("adminPass", "", "Password for admin account initialization")
-)
-
 func main() {
 	log.Println("Server starting")
 
