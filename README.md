@@ -52,3 +52,13 @@ heroku container:login
 heroku container:push web --app egurnov-maze-api
 heroku container:release web --app egurnov-maze-api
 ```
+
+
+# Open questions
+1. Is this a valid maze? There are multiple open cells in the last row, but only one of them is directly accessible.
+```
+|_|_|_|_|
+|_|_|_|_|
+|_|X|X|X|
+|_|_|_|_|
+```
