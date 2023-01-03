@@ -1,10 +1,10 @@
 API server for storing and solving simple mazes
 
 # Endpoints
-GitHub: https://github.com/egurnov/maze-api
-Heroku: https://egurnov-maze-api.herokuapp.com
-Swagger: https://egurnov-maze-api.herokuapp.com/swagger/index.html
-Postman: https://github.com/egurnov/maze-api/blob/main/maze-api.postman_collection.json
+GitHub: https://github.com/egurnov/maze-api  
+Heroku: https://egurnov-maze-api.herokuapp.com  
+Swagger: https://egurnov-maze-api.herokuapp.com/swagger/index.html  
+Postman: https://github.com/egurnov/maze-api/blob/main/maze-api.postman_collection.json  
 
 # How to run it
 

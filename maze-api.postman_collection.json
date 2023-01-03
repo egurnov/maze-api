@@ -16,7 +16,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"username\": \"alex1\",\r\n    \"password\": \"testtest\"\r\n}",
+					"raw": "{ \r\n    \"username\": \"alex\",\r\n    \"password\": \"testtest\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -45,7 +45,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \r\n    \"username\": \"alex1\",\r\n    \"password\": \"testtest\"\r\n}",
+					"raw": "{ \r\n    \"username\": \"alex\",\r\n    \"password\": \"testtest\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -148,7 +148,44 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "3"
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Print maze",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"gridSize\": \"8x8\",\r\n    \"entrance\": \"A1\",\r\n    \"walls\": [\r\n        \"C1\",\r\n        \"G1\",\r\n        \"A2\",\r\n        \"C2\",\r\n        \"E2\",\r\n        \"G2\",\r\n        \"C3\",\r\n        \"E3\",\r\n        \"B4\",\r\n        \"C4\",\r\n        \"E4\",\r\n        \"F4\",\r\n        \"G4\",\r\n        \"B5\",\r\n        \"E5\",\r\n        \"B6\",\r\n        \"D6\",\r\n        \"E6\",\r\n        \"G6\",\r\n        \"H6\",\r\n        \"B7\",\r\n        \"D7\",\r\n        \"G7\",\r\n        \"B8\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/maze/:id/print",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"maze",
+						":id",
+						"print"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "1"
 						}
 					]
 				}
