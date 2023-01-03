@@ -22,6 +22,7 @@ type MazeDTO struct {
 }
 
 type CreateMazeDTO = MazeDTO
+
 type MazeResponseDTO struct {
 	ID int64 `json:"id"`
 	MazeDTO
@@ -114,6 +115,35 @@ func (a *App) GetMaze(ctx *gin.Context) {
 	})
 }
 
+// PrintMaze godoc
+// @Summary Print one specific maze belonging to the current user
+// @ID PrintMaze
+// @Tags Maze
+// @Accept json
+// @Produce plain
+// @Security bearerAuth
+// @Param   id  path     integer     true  "maze id"
+// @Success 200 {array} byte
+// @Failure 400 {object} Message
+// @Failure 403 {object} Message
+// @Failure 500 {object} Message
+// @Router /maze/{id}/print [get]
+func (a *App) PrintMaze(ctx *gin.Context) {
+	id, err := strconv.ParseInt(ctx.Param("id"), 0, 64)
+	if err != nil {
+		ctx.Error(err).SetType(BadRequestErrorType)
+		return
+	}
+
+	res, err := a.MazeService.PrintMaze(id, ctx.GetInt64(CTXUserID))
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	ctx.Data(http.StatusOK, "text/plain", res)
+}
+
 // GetAllMazes godoc
 // @Summary Get all mazes belonging to the current user
 // @ID GetAllMazes
@@ -160,6 +190,7 @@ func (a *App) GetAllMazes(ctx *gin.Context) {
 // @Success 201 {object} SolutionResponseDTO
 // @Failure 400 {object} Message
 // @Failure 403 {object} Message
+// @Failure 408 {object} Message
 // @Failure 500 {object} Message
 // @Router /maze/{id}/solution [get]
 func (a *App) SolveMaze(ctx *gin.Context) {

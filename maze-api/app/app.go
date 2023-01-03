@@ -63,5 +63,6 @@ func (a *App) SetRoutes(r *gin.Engine) {
 		POST("", a.CreateMaze).
 		GET("", a.GetAllMazes).
 		GET(":id", a.GetMaze).
+		GET(":id/print", a.PrintMaze).
 		GET(":id/solution", a.SolveMaze)
 }

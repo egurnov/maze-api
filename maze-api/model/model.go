@@ -54,6 +54,7 @@ type MazeStore interface {
 
 type MazeService interface {
 	GetByID(id, userId int64) (*Maze, error)
+	PrintMaze(id, userId int64) ([]byte, error)
 	GetAll(userId int64) ([]*Maze, error)
 	Create(*Maze) (int64, error)
 	Solve(ctx context.Context, id, userId int64, steps string) ([]string, error)

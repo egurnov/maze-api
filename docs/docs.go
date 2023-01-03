@@ -35,8 +35,8 @@ const docTemplate = `{
                 "operationId": "login",
                 "parameters": [
                     {
-                        "description": "Credentials",
-                        "name": "email",
+                        "description": "Login credentials",
+                        "name": "credentials",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -222,6 +222,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/maze/{id}/print": {
+            "get": {
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "Maze"
+                ],
+                "summary": "Print one specific maze belonging to the current user",
+                "operationId": "PrintMaze",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "maze id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    }
+                }
+            }
+        },
         "/maze/{id}/solution": {
             "get": {
                 "security": [
@@ -275,6 +333,12 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/app.Message"
+                        }
+                    },
+                    "408": {
+                        "description": "Request Timeout",
                         "schema": {
                             "$ref": "#/definitions/app.Message"
                         }

@@ -3,6 +3,8 @@ package service
 import (
 	"errors"
 	"fmt"
+	"io"
+	"os"
 	"strconv"
 	"strings"
 
@@ -95,15 +97,19 @@ func makeMaze(rows, cols int, walls []string) ([][]bool, error) {
 }
 
 func printMaze(maze [][]bool) {
+	fPrintMaze(maze, os.Stdout)
+}
+
+func fPrintMaze(maze [][]bool, f io.Writer) {
 	for _, row := range maze {
 		for _, cell := range row {
 			if cell {
-				fmt.Print("|X")
+				fmt.Fprint(f, "|X")
 			} else {
-				fmt.Print("|_")
+				fmt.Fprint(f, "|_")
 			}
 		}
-		fmt.Println("|")
+		fmt.Fprintln(f, "|")
 	}
 }
 

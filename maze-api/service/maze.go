@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"context"
 
 	"github.com/egurnov/maze-api/maze-api/model"
@@ -14,6 +15,23 @@ var _ model.MazeService = &MazeService{}
 
 func (s *MazeService) GetByID(id, userId int64) (*model.Maze, error) {
 	return s.Store.GetByID(id, userId)
+}
+
+func (s *MazeService) PrintMaze(id, userId int64) ([]byte, error) {
+	mazeDescr, err := s.Store.GetByID(id, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	maze, err := makeMaze(mazeDescr.Rows, mazeDescr.Cols, mazeDescr.Walls)
+	if err != nil {
+		return nil, err
+	}
+
+	b := &bytes.Buffer{}
+	fPrintMaze(maze, b)
+
+	return b.Bytes(), nil
 }
 
 func (s *MazeService) GetAll(userId int64) ([]*model.Maze, error) {
