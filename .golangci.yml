@@ -28,15 +28,11 @@ linters:
   enable:
     - govet
     - staticcheck
-    - structcheck
-    - varcheck
     - ineffassign
-    - deadcode
     - typecheck
     - depguard
-    - golint
-    - gofmt
     - goimports
+    - revive
     - lll
     - unconvert
     - nakedret
@@ -52,6 +48,7 @@ issues:
     - "exported \\w+ (\\S*['.]*)([a-zA-Z'.*]*) should have comment (\\(or a comment on this block\\) )?or be unexported"
     - '(comment on exported )?((method|function|func)( parameter)?|const|var|struct field|type) (`)?[a-zA-Z0-9.*_]+(`)? should be (of the form )?([`"])?[a-zA-Z0-9.* ]+([`"])?'
     - 'declaration of "(err|ok)" shadows declaration at'
+    - "should have a package comment"
     - "Error return value of `(ctx.Error|errors.Wrap|\\(\\*github.com\\/gin-gonic\\/gin.Error\\).SetType)` is not checked"
 
   exclude-rules:

@@ -8,9 +8,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/egurnov/maze-api/maze-api/model"
 	"github.com/egurnov/maze-api/maze-api/service"
-	"github.com/gin-gonic/gin"
 )
 
 const SolveTimeout = 5 * time.Second

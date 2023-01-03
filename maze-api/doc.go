@@ -1,1 +1,1 @@
-package maze_api
+package mazeapi

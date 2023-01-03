@@ -3,7 +3,7 @@ package test_test
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	. "github.com/onsi/ginkgo"
@@ -25,7 +25,7 @@ var _ = Describe("App", func() {
 
 		resp = c.sendReq(http.MethodGet, "/nosuchpage", "")
 		Expect(resp.StatusCode).To(Equal(http.StatusNotFound))
-		Expect(ioutil.ReadAll(resp.Body)).To(MatchJSON(`{"message":"not found"}`))
+		Expect(io.ReadAll(resp.Body)).To(MatchJSON(`{"message":"not found"}`))
 	})
 
 	Specify("New user registration", func() {
@@ -34,7 +34,7 @@ var _ = Describe("App", func() {
 
 		resp = c.sendReq(http.MethodPost, "/user", `{"username": "alex", "password": "passw0rd"}`)
 		Expect(resp.StatusCode).To(Equal(http.StatusBadRequest))
-		Expect(ioutil.ReadAll(resp.Body)).To(ContainSubstring("username already used"))
+		Expect(io.ReadAll(resp.Body)).To(ContainSubstring("username already used"))
 
 		c.login("alex", "passw0rd")
 	})
@@ -92,7 +92,7 @@ var _ = Describe("App", func() {
 
 			resp = c2.sendReq(http.MethodGet, fmt.Sprintf("/maze/%d", mazeId), "")
 			Expect(resp.StatusCode).To(Equal(http.StatusNotFound))
-			Expect(ioutil.ReadAll(resp.Body)).To(BeEquivalentTo(`{"message":"not found"}`))
+			Expect(io.ReadAll(resp.Body)).To(BeEquivalentTo(`{"message":"not found"}`))
 		}
 	})
 })

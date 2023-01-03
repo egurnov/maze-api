@@ -3,7 +3,7 @@ package test_test
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -43,7 +43,7 @@ var _ = Describe("Auth", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(resp.StatusCode).To(Equal(tc.expStatus))
 			if tc.expStatus == http.StatusUnauthorized {
-				Expect(ioutil.ReadAll(resp.Body)).To(BeEmpty())
+				Expect(io.ReadAll(resp.Body)).To(BeEmpty())
 			}
 		}
 	})

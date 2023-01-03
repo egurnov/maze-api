@@ -3,7 +3,6 @@ package test_test
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -75,7 +74,7 @@ var (
 )
 
 func printResponse(v io.Reader) string {
-	b, err := ioutil.ReadAll(v)
+	b, err := io.ReadAll(v)
 	Expect(err).ToNot(HaveOccurred())
 	return fmt.Sprintf("Body: %s\n", b)
 }

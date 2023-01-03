@@ -96,6 +96,7 @@ func makeMaze(rows, cols int, walls []string) ([][]bool, error) {
 	return maze, nil
 }
 
+//nolint:unused
 func printMaze(maze [][]bool) {
 	fPrintMaze(maze, os.Stdout)
 }
